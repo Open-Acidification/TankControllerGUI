@@ -10,35 +10,19 @@ endif
 TC_PATH = $(LIBRARIES)/TankControllerLib/src
 PY_PATH = $(shell cd extern/pybind11; python3 -m pybind11 --includes)
 SUFFIX = $(shell python3-config --extension-suffix)
-PY_LIB = example$(SUFFIX)
+PY_LIB = libTC$(SUFFIX)
 
 .PHONY: all
-all : $(PY_LIB) tcVersion
+all : $(PY_LIB)
 
 $(PY_LIB) : TankControllerLib.o extern/pybind11/setup.py
 	echo "===== Compiling $(PY_LIB) =====" > /dev/null
-	$(CC) -shared -fPIC 							\
-	example.cpp -o $(PY_LIB)				 	\
-	-Wl,-undefined,dynamic_lookup 		\
-	$(PY_PATH)
-	echo
-
-tcVersion : libtc.dylib  
-	echo "===== Compiling tcVersion demo =====" > /dev/null
-	$(CC) -o tcVersion 	\
-	-I$(TC_PATH)			\
-	-I$(ARDUINO_CI) 	\
-	-L. -ltc					\
-	tcVersion.cpp
-	echo
-
-libtc.dylib : TankControllerLib.o
-	echo "===== Compiling TC wrapper shared library =====" > /dev/null
-	$(CC) -dynamiclib		\
-	-o libtc.dylib			\
-	-I$(TC_PATH) 				\
-	-I$(ARDUINO_CI) 		\
-	*.o TCLib.cpp
+	$(CC) -shared -fPIC 						\
+	-Wl,-undefined,dynamic_lookup 	\
+	$(PY_PATH)											\
+	-I$(TC_PATH) 										\
+	-I$(ARDUINO_CI) 								\
+	libTC.cpp *.o -o $(PY_LIB)
 	echo
 
 TankControllerLib.o : Godmode.o
@@ -79,4 +63,4 @@ extern/pybind11/setup.py :
 
 .PHONY: clean
 clean :
-	rm *.o tc-gui $(PY_LIB) 2> /dev/null || true
+	rm *.o *.so *.dylib $(PY_LIB) 2> /dev/null || echo

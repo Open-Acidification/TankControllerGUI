@@ -1,4 +1,4 @@
-#include "TCLib.h"
+#include "libTC.h"
 #include "TankControllerLib.h"
 
 void tc_setup() { TankControllerLib::instance()->setup(); }

@@ -4,9 +4,9 @@
 extern "C" {
 #endif
 
-void tc_setup();
-void tc_loop();
-const char* tc_version();
+void setup();
+void loop();
+const char* version();
 
 #ifdef __cplusplus
 }
