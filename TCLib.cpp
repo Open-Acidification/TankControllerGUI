@@ -3,4 +3,4 @@
 
 void tc_setup() { TankControllerLib::instance()->setup(); }
 void tc_loop() { TankControllerLib::instance()->loop(); }
-int tc_foo() { return TankControllerLib::instance()->foo(); }
+const char* tc_version() { return TankControllerLib::instance()->version(); }

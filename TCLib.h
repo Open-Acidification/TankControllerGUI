@@ -6,7 +6,7 @@ extern "C" {
 
 void tc_setup();
 void tc_loop();
-int tc_foo();
+const char* tc_version();
 
 #ifdef __cplusplus
 }

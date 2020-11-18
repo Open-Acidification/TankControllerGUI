@@ -13,7 +13,7 @@ SUFFIX = $(shell python3-config --extension-suffix)
 PY_LIB = example$(SUFFIX)
 
 .PHONY: all
-all : $(PY_LIB) testFoo
+all : $(PY_LIB) tcVersion
 
 $(PY_LIB) : TankControllerLib.o extern/pybind11/setup.py
 	echo "===== Compiling $(PY_LIB) =====" > /dev/null
@@ -23,13 +23,13 @@ $(PY_LIB) : TankControllerLib.o extern/pybind11/setup.py
 	$(PY_PATH)
 	echo
 
-testFoo : libtc.dylib  
-	echo "===== Compiling tc-gui demo =====" > /dev/null
-	$(CC) -o testFoo 	\
+tcVersion : libtc.dylib  
+	echo "===== Compiling tcVersion demo =====" > /dev/null
+	$(CC) -o tcVersion 	\
 	-I$(TC_PATH)			\
 	-I$(ARDUINO_CI) 	\
 	-L. -ltc					\
-	testFoo.cpp
+	tcVersion.cpp
 	echo
 
 libtc.dylib : TankControllerLib.o
