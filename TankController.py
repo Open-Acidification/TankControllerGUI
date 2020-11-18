@@ -1,5 +1,13 @@
-import wx
-  
+#!python3
+import libTC
+print('TankController version ', libTC.version())
+
+try:
+    import wx
+except ImportError:
+    print('wxpython is not installed')
+    exit()
+
 class TankController(wx.Frame): 
   labels = ['1', '2', '3', 'A', 
             '4', '5', '6', 'B',

@@ -15,7 +15,7 @@ PY_LIB = libTC$(SUFFIX)
 .PHONY: all
 all : $(PY_LIB)
 
-$(PY_LIB) : TankControllerLib.o extern/pybind11/setup.py
+$(PY_LIB) : TankControllerLib.o extern/pybind11/setup.py libTC.cpp
 	echo "===== Compiling $(PY_LIB) =====" > /dev/null
 	$(CC) -shared -fPIC 						\
 	-Wl,-undefined,dynamic_lookup 	\
@@ -52,6 +52,8 @@ extern/pybind11/setup.py :
 	git submodule update --init
 	# install pytest
 	python -m pip install pytest
+	# install wx
+	python -m pip install -U wxPython
 	# build pybind11
 	cd extern/pybind11
 	mkdir build
