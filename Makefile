@@ -1,54 +1,82 @@
 CC = g++ -std=c++17 -O3 
 DEFINES = -D__AVR__ -D__AVR_ATmega2560__ -DARDUINO_ARCH_AVR -DARDUINO_AVR_MEGA2560
 HOME = /Users/jfoster
-ARDUINO = $(HOME)/code/Arduino/arduino_ci/cpp/arduino
-LIBRARIES = $(HOME)/Documents/Arduino/libraries
+ifndef ARDUINO_CI
+	ARDUINO_CI = $(HOME)/code/Arduino/arduino_ci/cpp/arduino
+endif
+ifndef LIBRARIES
+	LIBRARIES = $(HOME)/Documents/Arduino/libraries
+endif
 TC_PATH = $(LIBRARIES)/TankControllerLib/src
 PY_PATH = $(shell cd extern/pybind11; python3 -m pybind11 --includes)
 SUFFIX = $(shell python3-config --extension-suffix)
+PY_LIB = example$(SUFFIX)
 
-all : tcLibPy # tc-gui
+.PHONY: all
+all : $(PY_LIB) testFoo
 
-tcLibPy : tcLibCPP
-	echo "\n=====Compiling Python Extension"
+$(PY_LIB) : TankControllerLib.o extern/pybind11/setup.py
+	echo "===== Compiling $(PY_LIB) =====" > /dev/null
 	$(CC) -shared -fPIC 							\
-	example.cpp -o example$(SUFFIX) 	\
+	example.cpp -o $(PY_LIB)				 	\
 	-Wl,-undefined,dynamic_lookup 		\
 	$(PY_PATH)
+	echo
 
-tc-gui : libtc  
-	echo "\n=====Compiling tc-gui demo!"
-	$(CC) -o tc-gui \
-	-I$(TC_PATH)		\
-	-I$(ARDUINO) 		\
-	-L. -ltc				\
-	main.cpp
+testFoo : libtc.dylib  
+	echo "===== Compiling tc-gui demo =====" > /dev/null
+	$(CC) -o testFoo 	\
+	-I$(TC_PATH)			\
+	-I$(ARDUINO_CI) 	\
+	-L. -ltc					\
+	testFoo.cpp
+	echo
 
-libtc : tcLibCPP
-	echo "\n=====Compiling TC wrapper shared library"
+libtc.dylib : TankControllerLib.o
+	echo "===== Compiling TC wrapper shared library =====" > /dev/null
 	$(CC) -dynamiclib		\
 	-o libtc.dylib			\
 	-I$(TC_PATH) 				\
-	-I$(ARDUINO) 				\
+	-I$(ARDUINO_CI) 		\
 	*.o TCLib.cpp
+	echo
 
-tcLibCPP : arduino
-	echo "\n=====Compiling TankControllerLib"
+TankControllerLib.o : Godmode.o
+	echo "===== Compiling TankControllerLib =====" > /dev/null
 	$(CC) -c 													\
 	$(DEFINES) 												\
 	-I$(TC_PATH) 											\
-	-I$(ARDUINO) 											\
+	-I$(ARDUINO_CI) 									\
 	-I$(LIBRARIES)/LiquidCrystal/src	\
 	$(TC_PATH)/*.cpp 									\
 	$(TC_PATH)/Devices/*.cpp 					\
 	$(TC_PATH)/UIState/*.cpp
+	echo
 
-arduino :
-	echo "\n=====Compiling Arduino CI mocks"
+Godmode.o :
+	echo "===== Compiling Arduino CI mocks =====" > /dev/null
 	$(CC) -c 					\
 	$(DEFINES) 				\
-	-I$(ARDUINO) 			\
-	$(ARDUINO)/*.cpp 
+	-I$(ARDUINO_CI) 	\
+	$(ARDUINO_CI)/*.cpp 
+	echo
 
+extern/pybind11/setup.py : 
+	echo "===== Install pybind11 =====" > /dev/null
+	mkdir extern
+	git submodule add ../../pybind/pybind11 extern/pybind11 -b stable
+	git submodule update --init
+	# install pytest
+	python -m pip install pytest
+	# build pybind11
+	cd extern/pybind11
+	mkdir build
+	cd build
+	cmake ..
+	# compile and run tests
+	make check -j 4
+	echo
+
+.PHONY: clean
 clean :
-	rm *.o 2> /dev/null || true
+	rm *.o tc-gui $(PY_LIB) 2> /dev/null || true
