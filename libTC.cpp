@@ -14,7 +14,7 @@ const char *version() { return TankControllerLib::instance()->version(); }
 PYBIND11_MODULE(libTC, m) {
   m.doc() = "pybind11 example plugin"; // optional module docstring
 
-  m.def("setup", &version, "TankController setup");
-  m.def("loop", &version, "TankController loop");
+  m.def("setup", &setup, "TankController setup");
+  m.def("loop", &loop, "TankController loop");
   m.def("version", &version, "TankController version");
 }

@@ -1,5 +1,5 @@
 CC = g++ -std=c++17 -O3 
-DEFINES = -D__AVR__ -D__AVR_ATmega2560__ -DARDUINO_ARCH_AVR -DARDUINO_AVR_MEGA2560
+DEFINES = -D__AVR__ -D__AVR_ATmega2560__ -DARDUINO_ARCH_AVR -DARDUINO_AVR_MEGA2560 -DARDUINO=100
 ifndef ARDUINO_CI
 	ARDUINO_CI = $(HOME)/code/Arduino/arduino_ci/cpp/arduino
 endif
