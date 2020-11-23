@@ -1,3 +1,5 @@
 #!python3
 import libTC
-print('TankController version: ', libTC.version())
+print('Version:', libTC.version())
+print('LCD:    ', libTC.lcd(0))
+print('        ', libTC.lcd(1))

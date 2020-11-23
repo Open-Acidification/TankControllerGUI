@@ -25,14 +25,17 @@ class TankController(wx.Frame):
 
     mainSizer = wx.BoxSizer(wx.VERTICAL)
 
-    lqdSizer = wx.StaticBoxSizer(wx.VERTICAL, panel, label="Liquid Crystal Display (16x2)")
-    lqd = wx.StaticText(panel, label = "               X\n               X")
+    version = wx.StaticText(panel, label="Version " + libTC.version())
+    mainSizer.Add(version,1)
+
+    lqdSizer = wx.StaticBoxSizer(wx.VERTICAL, panel)
+    lqd = wx.StaticText(panel, label = libTC.lcd(0) + '\n' + libTC.lcd(1))
     font = wx.Font(20, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL) 
     lqd.SetFont(font) 
     lqdSizer.Add(lqd, 1)
     mainSizer.Add(lqdSizer,1)
 
-    keypadSizer = wx.StaticBoxSizer(wx.VERTICAL, panel, label="Keypad (4x4 Membrane)")
+    keypadSizer = wx.StaticBoxSizer(wx.VERTICAL, panel)
 
     keypadGrid = wx.GridSizer(4, 4, 5, 5) 
     for each in self.labels: 
