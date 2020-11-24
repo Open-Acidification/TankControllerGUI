@@ -16,44 +16,42 @@ all : $(PY_LIB)
 
 $(PY_LIB) : TankControllerLib.o extern/pybind11/setup.py libTC.cpp
 	echo "===== Compiling PY_LIB ($(PY_LIB)) =====" > /dev/null
-	$(CC) -shared -fPIC 							\
-	-Wl,-undefined,dynamic_lookup 		\
-	$(PY_PATH)												\
-	-I$(TC_PATH) 											\
-	-I$(ARDUINO_CI) 									\
-	-I$(LIBRARIES)/LiquidCrystal/src	\
-	-I$(LIBRARIES)/RTClib/src					\
+	$(CC) -shared -fPIC               \
+	-Wl,-undefined,dynamic_lookup     \
+	$(PY_PATH)                        \
+	-I$(TC_PATH)                      \
+	-I$(ARDUINO_CI)                   \
+	-I$(LIBRARIES)/LiquidCrystal/src  \
+	-I$(LIBRARIES)/RTClib/src         \
 	libTC.cpp *.o -o $(PY_LIB)
 	echo
 
 TankControllerLib.o : Godmode.o
 	echo "===== Compiling TankControllerLib =====" > /dev/null
-	$(CC) -c 															\
-	$(DEFINES) 														\
-	-I$(TC_PATH) 													\
-	-I$(ARDUINO_CI) 											\
-	-I$(LIBRARIES)/LiquidCrystal/src			\
-	-I$(LIBRARIES)/RTClib/src							\
-	$(TC_PATH)/*.cpp 											\
-	$(TC_PATH)/Devices/*.cpp 							\
-	$(TC_PATH)/UIState/*.cpp							\
-	$(LIBRARIES)/LiquidCrystal/src/*.cpp	\
+	$(CC) -c                              \
+	$(DEFINES)                            \
+	-I$(TC_PATH)                          \
+	-I$(ARDUINO_CI)                       \
+	-I$(LIBRARIES)/LiquidCrystal/src      \
+	-I$(LIBRARIES)/RTClib/src             \
+	$(TC_PATH)/*.cpp                      \
+	$(TC_PATH)/Devices/*.cpp              \
+	$(TC_PATH)/UIState/*.cpp              \
+	$(LIBRARIES)/LiquidCrystal/src/*.cpp  \
 	$(LIBRARIES)/RTClib/src/*.cpp					
 	echo
 
 Godmode.o :
 	echo "===== Compiling Arduino CI mocks =====" > /dev/null
-	$(CC) -c 					\
-	$(DEFINES) 				\
-	-I$(ARDUINO_CI) 	\
+	$(CC) -c          \
+	$(DEFINES)        \
+	-I$(ARDUINO_CI)   \
 	$(ARDUINO_CI)/*.cpp 
 	echo
 
 extern/pybind11/setup.py : 
 	echo "===== Install pybind11 =====" > /dev/null
-	mkdir extern
-	git submodule add ../../pybind/pybind11 extern/pybind11 -b stable
-	git submodule update --init
+	git submodule update --init --recursive
 	# install pytest
 	python -m pip install pytest
 	# install wx
